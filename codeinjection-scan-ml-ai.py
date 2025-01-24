@@ -330,7 +330,12 @@ def test_url_parameters(url, payloads, model, db_name, save_options):
                 # Decide whether to save the response based on save_options
                 should_save = False
                 if save_options['save_all']:
-                    should_save = True
+                    if save_options['filter_response']:
+                        # Apply filtering: do not save empty or responses starting with <!DOCTYPE or <html>
+                        if response.text and not re.match(r'(?i)^\s*<!DOCTYPE|<html', response.text):
+                            should_save = True
+                    else:
+                        should_save = True
                 elif save_options['save200_only'] and status == 200:
                     should_save = True
                 elif save_options['custom_statuses'] and status in save_options['custom_statuses']:
@@ -420,7 +425,12 @@ def test_forms(url, soup, payloads, model, db_name, save_options):
                     # Decide whether to save the response based on save_options
                     should_save = False
                     if save_options['save_all']:
-                        should_save = True
+                        if save_options['filter_response']:
+                            # Apply filtering: do not save empty or responses starting with <!DOCTYPE or <html>
+                            if response.text and not re.match(r'(?i)^\s*<!DOCTYPE|<html', response.text):
+                                should_save = True
+                        else:
+                            should_save = True
                     elif save_options['save200_only'] and status == 200:
                         should_save = True
                     elif save_options['custom_statuses'] and status in save_options['custom_statuses']:
@@ -911,6 +921,13 @@ def main():
         help='Specify HTTP status codes to save responses (e.g., --save-status 200 404).'
     )
 
+    # New option: --filterresponse
+    parser.add_argument(
+        '--filterresponse',
+        action='store_true',
+        help='When used with --saveallresponses, filters out empty responses or those starting with <!DOCTYPE or <html> to reduce false positives.'
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -943,16 +960,26 @@ def main():
     save_options = {
         'save200_only': False,
         'save_all': False,
-        'custom_statuses': set()
+        'custom_statuses': set(),
+        'filter_response': False  # New key for filtering responses
     }
 
     if args.save200only:
         save_options['save200_only'] = True
     elif args.saveallresponses:
         save_options['save_all'] = True
+        if args.filterresponse:
+            save_options['filter_response'] = True
     elif args.save_status:
         save_options['custom_statuses'] = set(args.save_status)
-    else:
+
+    # If --filterresponse is used without --saveallresponses, warn the user
+    if args.filterresponse and not args.saveallresponses:
+        log_with_color("error", "--filterresponse must be used with --saveallresponses.", "red")
+        conn.close()
+        return
+
+    if not (args.save200only or args.saveallresponses or args.save_status):
         # Default behavior: Save only 200 OK responses
         save_options['save200_only'] = True
         log_with_color("info", "No save option specified. Defaulting to --save200only.", "yellow")
@@ -1001,3 +1028,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
