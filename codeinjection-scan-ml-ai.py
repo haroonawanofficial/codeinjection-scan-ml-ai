@@ -303,7 +303,7 @@ def fetch_and_parse_url(url):
     return None
 
 # Function to inject payloads into URL parameters
-def test_url_parameters(url, payloads, model, db_name):
+def test_url_parameters(url, payloads, model, db_name, save_options):
     parsed_url = urlparse(url)
     query_params = parse_qs(parsed_url.query)
     if not query_params:
@@ -327,14 +327,24 @@ def test_url_parameters(url, payloads, model, db_name):
                 status = response.status_code
                 timestamp = datetime.datetime.now().isoformat()
 
-                # Insert into responses table
-                conn, cursor = setup_database(db_name)
-                cursor.execute(
-                    "INSERT INTO responses (url, payload, response, timestamp, status) VALUES (?, ?, ?, ?, ?)",
-                    (injected_url, payload, response.text, timestamp, status)
-                )
-                conn.commit()
-                conn.close()
+                # Decide whether to save the response based on save_options
+                should_save = False
+                if save_options['save_all']:
+                    should_save = True
+                elif save_options['save200_only'] and status == 200:
+                    should_save = True
+                elif save_options['custom_statuses'] and status in save_options['custom_statuses']:
+                    should_save = True
+
+                if should_save:
+                    # Insert into responses table
+                    conn, cursor = setup_database(db_name)
+                    cursor.execute(
+                        "INSERT INTO responses (url, payload, response, timestamp, status) VALUES (?, ?, ?, ?, ?)",
+                        (injected_url, payload, response.text, timestamp, status)
+                    )
+                    conn.commit()
+                    conn.close()
 
                 # Check for vulnerability indicators
                 vulnerability_detected = False
@@ -369,8 +379,8 @@ def get_cwe_for_payload(payload):
     else:
         return "Unknown CWE"
 
-# Function to test forms
-def test_forms(url, soup, payloads, model, db_name):
+# Function to inject payloads into form fields
+def test_forms(url, soup, payloads, model, db_name, save_options):
     forms = soup.find_all('form')
     for form in forms:
         action = form.get('action')
@@ -407,14 +417,24 @@ def test_forms(url, soup, payloads, model, db_name):
                     status = response.status_code
                     timestamp = datetime.datetime.now().isoformat()
 
-                    # Insert into responses table
-                    conn, cursor = setup_database(db_name)
-                    cursor.execute(
-                        "INSERT INTO responses (url, payload, response, timestamp, status) VALUES (?, ?, ?, ?, ?)",
-                        (target_url, payload, response.text, timestamp, status)
-                    )
-                    conn.commit()
-                    conn.close()
+                    # Decide whether to save the response based on save_options
+                    should_save = False
+                    if save_options['save_all']:
+                        should_save = True
+                    elif save_options['save200_only'] and status == 200:
+                        should_save = True
+                    elif save_options['custom_statuses'] and status in save_options['custom_statuses']:
+                        should_save = True
+
+                    if should_save:
+                        # Insert into responses table
+                        conn, cursor = setup_database(db_name)
+                        cursor.execute(
+                            "INSERT INTO responses (url, payload, response, timestamp, status) VALUES (?, ?, ?, ?, ?)",
+                            (target_url, payload, response.text, timestamp, status)
+                        )
+                        conn.commit()
+                        conn.close()
 
                     # Check for vulnerability indicators
                     vulnerability_detected = False
@@ -452,14 +472,14 @@ def log_vulnerability(url, payload, cwe, response_text, timestamp, db_name):
 
 # Worker function for multiprocessing (defined at top level)
 def worker(task):
-    url, payloads, model, db_name = task
+    url, payloads, model, db_name, save_options = task
     # Test URL parameters
-    test_url_parameters(url, payloads, model, db_name)
+    test_url_parameters(url, payloads, model, db_name, save_options)
 
     # Fetch and parse the URL again for form testing
     soup = fetch_and_parse_url(url)
     if soup:
-        test_forms(url, soup, payloads, model, db_name)
+        test_forms(url, soup, payloads, model, db_name, save_options)
 
 # Function to load domains from a file
 def load_domains_from_file(file_path):
@@ -704,7 +724,6 @@ def crawl_internal_links(start_url, domain, max_depth=3):
                 if href_clean not in visited:
                     to_visit.append((href_clean, depth + 1))
 
-    
     return php_urls
 
 # Function to crawl and extract URLs
@@ -732,7 +751,10 @@ def crawl_and_extract(start_url, use_wayback, use_commoncrawl, cursor, conn, max
             wayback = WaybackMachineCDXServerAPI(domain)
             for snapshot in wayback.snapshots():
                 try:
-                    wayback_urls.append(snapshot.original)
+                    original_url = snapshot.original
+                    original_url = clean_url(original_url)
+                    if original_url.startswith(domain):
+                        wayback_urls.append(original_url)
                 except AttributeError:
                     continue
             log_with_color("info", f"Extracted {len(wayback_urls)} URLs from Wayback Machine for {domain}.", "cyan")
@@ -750,7 +772,10 @@ def crawl_and_extract(start_url, use_wayback, use_commoncrawl, cursor, conn, max
                     if line:
                         try:
                             data = json.loads(line)
-                            commoncrawl_urls.append(data['url'])
+                            external_url = data['url']
+                            external_url = clean_url(external_url)
+                            if external_url.startswith(domain):
+                                commoncrawl_urls.append(external_url)
                         except json.JSONDecodeError:
                             continue
                 log_with_color("info", f"Extracted {len(commoncrawl_urls)} URLs from CommonCrawl for {domain}.", "cyan")
@@ -800,9 +825,9 @@ https://cyberzeus.pk
 def main():
     print(BANNER)  # Display the professional banner
     parser = argparse.ArgumentParser(
-    description="Code Injection Scanner",
-    usage="python phpscan.py --start-url <URL> [OPTIONS]"
-)
+        description="Code Injection Scanner",
+        usage="python phpscan.py --start-url <URL> [OPTIONS]"
+    )
 
     # Group for mandatory input options
     input_group = parser.add_mutually_exclusive_group(required=True)
@@ -866,6 +891,26 @@ def main():
         help='Set the maximum depth for internal crawling (default: 3).'
     )
 
+    # New mutually exclusive group for saving responses
+    save_group = parser.add_mutually_exclusive_group()
+    save_group.add_argument(
+        '--save200only', 
+        action='store_true', 
+        help='Save only responses with HTTP 200 OK status.'
+    )
+    save_group.add_argument(
+        '--saveallresponses', 
+        action='store_true', 
+        help='Save all responses regardless of HTTP status.'
+    )
+    save_group.add_argument(
+        '--save-status', 
+        type=int, 
+        nargs='+', 
+        metavar='STATUS', 
+        help='Specify HTTP status codes to save responses (e.g., --save-status 200 404).'
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -894,6 +939,24 @@ def main():
             conn.close()
             return
 
+    # Determine save options based on command-line arguments
+    save_options = {
+        'save200_only': False,
+        'save_all': False,
+        'custom_statuses': set()
+    }
+
+    if args.save200only:
+        save_options['save200_only'] = True
+    elif args.saveallresponses:
+        save_options['save_all'] = True
+    elif args.save_status:
+        save_options['custom_statuses'] = set(args.save_status)
+    else:
+        # Default behavior: Save only 200 OK responses
+        save_options['save200_only'] = True
+        log_with_color("info", "No save option specified. Defaulting to --save200only.", "yellow")
+
     domains = []
     if args.start_url:
         domains.append(args.start_url)
@@ -918,7 +981,7 @@ def main():
     tasks = []
     for url_tuple in urls:
         url = url_tuple[0]
-        tasks.append((url, payloads, model, args.database))
+        tasks.append((url, payloads, model, args.database, save_options))
 
     # Define number of workers
     pool_size = min(cpu_count(), 24)  # Limiting to 24 to prevent excessive resource usage
