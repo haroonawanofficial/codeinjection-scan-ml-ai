@@ -1,4 +1,4 @@
-# Advanced Code Injection Vulnerability Scanner with Forms and Auto Crawl
+# Code Injection Scanner with Forms and Auto Crawl
 
 ![Scanner Banner](https://your-image-link.com/banner.png)
 
