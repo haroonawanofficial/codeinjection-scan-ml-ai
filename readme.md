@@ -1,4 +1,4 @@
-# Code Injection Scanner with Forms and Auto Crawl
+# Code Injection Scanner - Machine Learning and AI Powered
 
 ![Scanner Banner](https://your-image-link.com/banner.png)
 
