@@ -10,7 +10,7 @@ Advanced PHP Vulnerability Scanner is a powerful tool designed to identify and e
 
 - **Automated Crawling:** Recursively crawl target domains to discover PHP-related endpoints.
 - **Extended PHP Extensions Support:** Scans `.php`, `.php3`, `.php4`, `.php5`, `.php7`, `.php8`, `.phtml`, and other PHP-related extensions.
-- **Diverse Payloads:** Utilizes a wide range of payloads covering various vulnerabilities like XSS, SQL Injection, Command Injection, SSRF, and more.
+- **Diverse Payloads:** Utilizes a wide range of payloads covering various vulnerabilities like XSS, SQL Injection, Command Injection, SSRF, IDOR, XML, Authorization Bypass, LFI, RFI, RCE, Crypto and more.
 - **AI-Based Detection:** Leverages machine learning models to enhance vulnerability detection accuracy.
 - **Comprehensive Reporting:** Generates detailed HTML reports highlighting discovered vulnerabilities.
 - **Multiprocessing Support:** Speeds up the scanning process by utilizing multiple CPU cores.
@@ -20,8 +20,8 @@ Advanced PHP Vulnerability Scanner is a powerful tool designed to identify and e
 
 1. **Clone the Repository:**
     ```bash
-    git clone https://github.com/yourusername/php-vulnerability-scanner.git
-    cd php-vulnerability-scanner
+    git clone https://github.com/yourusername/codeinjection-scan-ml-ai.git
+    cd codeinjection-scan-ml-ai
     ```
 
 2. **Install Dependencies:**
