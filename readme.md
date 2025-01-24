@@ -42,21 +42,26 @@ Advanced PHP Vulnerability Scanner is a powerful tool designed to identify and e
 ### Basic Scan
 Start scanning a target URL with default settings:
 ```bash
-python phpscan.py --start-url http://testphp.vulnweb.com -db php_vulnerability_test.db -r -v --max-depth 3
+python phpscan.py --start-url http://testphp.vulnweb.com -db codeinjection-scan-ml.db -r -v --max-depth 3
 ```
 
 ### Comprehensive Scan with External Sources
 Include CommonCrawl and Wayback Machine URLs in the scan:
-
-python phpscan.py --start-url http://testphp.vulnweb.com -db php_vulnerability_test.db -r -v --use-commoncrawl --include-wayback --max-depth 3
+```bash
+python phpscan.py --start-url http://testphp.vulnweb.com -db codeinjection-scan-ml.db -r -v --use-commoncrawl --include-wayback --max-depth 3
+```
 
 ### Train the AI Model
 After collecting sufficient data, train the AI model to improve detection accuracy:
+```bash
 python phpscan.py --train-model -db php_vulnerability_test.db -m vuln_model.pkl
+```
 
 ### Scan with AI-Based Detection
 Enable AI-based vulnerability detection using the trained model:
+```bash
 python phpscan.py --start-url http://testphp.vulnweb.com --use-ai -db codeinjection-scan-ml.db -r -v -m vuln_model.pkl --max-depth 3
+```
 
 ### 📄 Report
 After completing the scan, an HTML report named found_vulnerability_codeinjection-scan-ml.html will be generated. Open this file in your web browser to review the detected vulnerabilities.
