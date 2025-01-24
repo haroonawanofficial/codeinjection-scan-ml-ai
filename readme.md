@@ -1,4 +1,4 @@
-# Code Injection Scanner - Machine Learning and AI Powered
+# Code Injection Scanner
 
 ![Scanner Banner](https://your-image-link.com/banner.png)
 
