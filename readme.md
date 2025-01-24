@@ -66,6 +66,10 @@ python phpscan.py --start-url http://testphp.vulnweb.com --use-ai -db codeinject
 ### 📄 Report
 After completing the scan, an HTML report named found_vulnerability_codeinjection-scan-ml.html will be generated. Open this file in your web browser to review the detected vulnerabilities.
 
+### 📄 Sql lite View
+It saves all of the data perfectly and organizes it beautifully. This provides you with comprehensive information about the vulnerabilities and where code injection is possible, offering very detailed heuristic information
+![Data Organized](https://i.ibb.co/VwQPb00/codeinjection.png)
+
 ###  📜 License
 This project is licensed under the MIT License.
 
