@@ -4,7 +4,7 @@
 
 ## 🚀 Overview
 
-Advanced PHP Vulnerability Scanner is a powerful tool designed to identify and exploit vulnerabilities in PHP applications. It features automated crawling, diverse payload injections, AI-based detection, comprehensive reporting, and multiprocessing support to ensure efficient and accurate vulnerability assessments.
+Code Injection Scanner is a powerful tool designed to identify and exploit vulnerabilities in Dynamic Applications such as php ASP, ASPX, PHP.... and more. It features automated crawling, diverse payload injections, AI-based detection, comprehensive reporting, and multiprocessing support to ensure efficient and accurate vulnerability assessments.
 
 ## 🔍 Features
 
