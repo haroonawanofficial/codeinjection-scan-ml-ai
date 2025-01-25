@@ -11,6 +11,7 @@ Code Injection Scanner is a powerful tool designed to identify and exploit vulne
 - **Automated Crawling:** Recursively crawl target domains to discover PHP-related endpoints.
 - **Extended PHP Extensions Support:** Scans `.php`, `.php3`, `.php4`, `.php5`, `.php7`, `.php8`, `.phtml`, and other PHP-related extensions.
 - **Diverse Payloads:** Reflected XSS, Stored XSS, Advanced SQL Injection, Advanced Command Injection, SSRF, IDOR, XML, Authorization Bypass Payloads, LFI, RFI, RCE, Crypto and much more....
+    - **OWASP Framework Support:** Supports full Owasp top 10 framework for vulnerabilities and produce heuristics for further testing and exploitation....
 - **AI-Based Detection:** Leverages machine learning models to enhance vulnerability detection accuracy.
 - **Comprehensive Reporting:** Generates detailed HTML reports highlighting discovered vulnerabilities.
 - **Multiprocessing Support:** Speeds up the scanning process by utilizing multiple CPU cores.
